@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function Login({ handleLogin }) {
+function Login({ handleLogin, navigateTo }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -46,6 +46,15 @@ function Login({ handleLogin }) {
         >
           Login
         </button>
+        <p className="text-center text-gray-600 mt-4 text-sm">
+            Don't have an account?{" "}
+            <button
+                className="text-green-600 hover:underline font-medium"
+                onClick={() => navigateTo && navigateTo("register")}
+            >
+                Register
+            </button>
+        </p>
       </form>
     </div>
   );

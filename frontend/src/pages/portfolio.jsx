@@ -39,12 +39,12 @@ function Portfolio({ navigateTo }) {
                 <td className="px-6 py-4 whitespace-nowrap font-medium text-green-600">{stock.symbol}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{stock.name}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-right">{stock.shares}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-right">${stock.price.toFixed(2)}</td>
-                <td className={`px-6 py-4 whitespace-nowrap text-right ${stock.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <td className="px-6 py-4 whitespace-nowrap text-right">₹{stock.price.toFixed(2)}</td>
+                <td className={`px-6 py-4 whitespace-nowrap text-right ₹{stock.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   {stock.change > 0 ? '+' : ''}{stock.change}%
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right font-medium">
-                  ${(stock.shares * stock.price).toFixed(2)}
+                  ₹{(stock.shares * stock.price).toFixed(2)}
                 </td>
               </tr>
             ))}
