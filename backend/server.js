@@ -7,6 +7,7 @@ import authMiddleware from './auth.js'
 import cookieParser from 'cookie-parser'
 import 'dotenv/config'
 import {loginUser,registerUser} from './controllers/UserControllers.js'
+import { amendOrder, cancelOrder, placeOrder } from './controllers/OrderController.js'
 
 const PORT = process.env.PORT || 8000
 
@@ -31,6 +32,10 @@ app.post('/guarded',authMiddleware,async(req,res)=>{
 
 })
 
+app.use(authMiddleware)
+app.post('/placeOrder', placeOrder)
+app.post('/amendOrder', amendOrder)
+app.post('/cancelOrder' , cancelOrder)
 
 
 
