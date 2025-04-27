@@ -5,6 +5,7 @@ import Home from './pages/home.jsx';
 import Login from './pages/login.jsx';
 import Portfolio from './pages/portfolio.jsx';
 import Order from './pages/order.jsx';
+import Explore from './pages/explore.jsx'
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
@@ -20,7 +21,7 @@ function App() {
   const handleLogin = (email) => {
     setIsLoggedIn(true);
     setUserEmail(email);
-    setCurrentPage('portfolio');
+    setCurrentPage('explore');
   };
 
   // Logout handler
@@ -43,6 +44,7 @@ function App() {
       <main className="flex-grow container mx-auto p-4">
         {currentPage === 'home' && <Home navigateTo={navigateTo} />}
         {currentPage === 'login' && <Login handleLogin={handleLogin} />}
+        {currentPage === 'explore' && isLoggedIn && <Explore />}
         {currentPage === 'portfolio' && isLoggedIn && <Portfolio navigateTo={navigateTo} />}
         {currentPage === 'order' && isLoggedIn && <Order />}
       </main>

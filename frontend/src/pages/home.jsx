@@ -1,4 +1,5 @@
 import React from 'react';
+//import { fetchUsers } from "../api/api.js"
 
 function Home({ navigateTo }) {
   return (
@@ -27,7 +28,7 @@ function Home({ navigateTo }) {
           <p className="text-gray-600">Buy and sell stocks with just a few clicks</p>
         </div>
       </div>
-
+      
       <div className="text-center">
         <button
           onClick={() => navigateTo('login')}
