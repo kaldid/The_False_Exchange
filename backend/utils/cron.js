@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
-const Order = require('../models/Order');
-const getRandomCirculation = require('./randomCirculation')
+import Order from '../models/Order';
+import { getRandomCirculation } from './randomCirculation';
+import { updatePortfolio } from '../controllers/PortfolioController';
 
 const activeOrderTimers = new Map(); // OrderId -> timerId
 
@@ -25,6 +25,7 @@ async function handleOrderUpdate(orderId) {
             order.status = 'EXECUTED';
             order.updatedAt = Date.now();
             await order.save();
+            await updatePortfolio(order.userId, order.security, order.quantity, order.price);
             stopCronForOrder(orderId);
             return;
         }
@@ -45,6 +46,7 @@ async function handleOrderUpdate(orderId) {
         console.log(`Updated Order ${orderId}: Status=${order.status}, ExecutedQuantity=${order.executedQuantity}`);
         
         if (order.status === 'EXECUTED') {
+            await updatePortfolio(order.userId, order.security, order.quantity, order.price);
             stopCronForOrder(orderId);
         }
 

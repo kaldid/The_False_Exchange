@@ -1,6 +1,8 @@
 import Order from "../models/Order";
+import User from "../models/User";
 import { getRandomCirculation } from "../utils/randomCirculation";
 import { startCronForOrder , stopCronForOrder } from "../utils/cron";
+import { updatePortfolio } from "./PortfolioController";
 
 const placeOrder = async (req, res) => {
     try {
@@ -31,11 +33,15 @@ const placeOrder = async (req, res) => {
 
         const savedOrder = await newOrder.save();
 
-        startCronForOrder(newOrder._id);
+        startCronForOrder(savedOrder._id);
 
         await User.findByIdAndUpdate(userId, {
             $push: { orders: savedOrder._id }
         });
+
+        if (status === 'EXECUTED') {
+            await updatePortfolio(userId, security, quantity, price);  
+        }
 
         return res.status(200).json({
             message: "Order placed successfully",
