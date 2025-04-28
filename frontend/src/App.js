@@ -32,6 +32,30 @@ function App() {
         setCurrentPage('home');
     };
 
+    const handleRegister = async (form) => { 
+        try {
+            const response = await fetch("http://localhost:8000/register", { // Change URL to your backend
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+            username: form.username,
+            email: form.email,
+            password: form.password
+            }),
+            });
+            const data = await response.json();
+            if (data.success) {
+                alert("Registration successful! Please log in.");
+                navigateTo("login");
+            } else {
+                alert(data.message || "Registration failed.");
+            }
+        } catch (error) {
+            alert("Registration failed: " + error.message);
+        }
+    };
+
+
     return (
         <div className="flex flex-col min-h-screen bg-gray-50">
         {/* Header */}
@@ -48,7 +72,7 @@ function App() {
             {currentPage === 'explore' && isLoggedIn && <Explore />}
             {currentPage === 'portfolio' && isLoggedIn && <Portfolio navigateTo={navigateTo} />}
             {currentPage === 'order' && isLoggedIn && <Order />}
-            {currentPage === 'register' && <Register />}
+            {currentPage === 'register' && <Register onRegister={handleRegister} navigateTo={navigateTo} />}
         </main>
 
         {/* Footer */}
