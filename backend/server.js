@@ -8,7 +8,7 @@ import cookieParser from 'cookie-parser'
 import 'dotenv/config'
 import {loginUser,registerUser} from './controllers/UserControllers.js'
 import { amendOrder, cancelOrder, placeOrder } from './controllers/OrderController.js'
-
+import { getPortfolioByUserId } from './controllers/PortfolioController.js'
 const PORT = process.env.PORT || 8000
 
 const app=express();
@@ -25,7 +25,14 @@ await connectDB();
 
 app.post('/login',loginUser)
 
-
+app.post('/logout', (req, res) => {
+    res.clearCookie('token', {
+        httpOnly: true,
+        sameSite: 'Strict',
+        secure: false, // true if you're using HTTPS
+    });
+    res.json({ success: true, message: 'Logged out successfully' });
+});
 
 app.post('/register',registerUser)
 
@@ -40,7 +47,7 @@ app.post('/placeOrder', placeOrder)
 app.post('/amendOrder', amendOrder)
 app.post('/cancelOrder' , cancelOrder)
 
-
+app.get('/getportfolio',authMiddleware,getPortfolioByUserId)
 
 
 

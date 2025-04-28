@@ -1,4 +1,5 @@
 import Portfolio from "../models/Portfolio.js";
+import jwt from 'jsonwebtoken';
 
 export const updatePortfolio = async (userId, security, quantity, price) => {
     const portfolio = await Portfolio.findOne({ userId });
@@ -32,3 +33,31 @@ export const updatePortfolio = async (userId, security, quantity, price) => {
         await portfolio.save();
     }
 };
+
+
+
+export const getPortfolioByUserId = async (req, res) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) {
+      return res.status(401).json({ success: false, message: 'Unauthorized' });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.id; // You saved id in payload
+
+    const portfolio = await Portfolio.findOne({ userId });
+
+    if (!portfolio) {
+      return res.status(404).json({ success: false, message: 'Portfolio not found' });
+    }
+
+    res.json({ success: true, portfolio });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Server Error', error: error.message });
+  }
+};
+
+
