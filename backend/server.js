@@ -16,10 +16,7 @@ const app=express();
 // app.use((req,res)=>res.send('hi'))
 app.use(cookieParser()); 
 app.use(express.json())
-app.use(cors({
-    origin: 'http://localhost:3000', // your frontend URL
-    credentials: true, // Allow cookies
-}));
+app.use(cors())
 app.use(express.urlencoded({ extended: true }));
 await connectDB();
 
