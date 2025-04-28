@@ -1,4 +1,4 @@
-import Portfolio from "../models/Portfolio";
+import Portfolio from "../models/Portfolio.js";
 
 export const updatePortfolio = async (userId, security, quantity, price) => {
     const portfolio = await Portfolio.findOne({ userId });

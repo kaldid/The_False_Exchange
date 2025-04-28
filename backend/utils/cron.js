@@ -1,6 +1,6 @@
-import Order from '../models/Order';
-import { getRandomCirculation } from './randomCirculation';
-import { updatePortfolio } from '../controllers/PortfolioController';
+import Order from '../models/Order.js';
+import { getRandomCirculation } from './randomCirculation.js';
+import { updatePortfolio } from '../controllers/PortfolioController.js';
 
 const activeOrderTimers = new Map(); // OrderId -> timerId
 

@@ -1,11 +1,13 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
 const portfolioSchema = new mongoose.Schema({
-  userId: {
+  userInfo: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
   },
+
+
   holdings: [
     {
       security: {
@@ -25,4 +27,6 @@ const portfolioSchema = new mongoose.Schema({
 
  });
 
-module.exports = mongoose.model('Portfolio', portfolioSchema);
+const Portfolio=mongoose.model('Portfolio', portfolioSchema);
+
+export default Portfolio

@@ -58,7 +58,8 @@ const loginUser  = async(req,res)=>{
         const isMatch = await bcrypt.compare(password,user.password)
         
         if(isMatch){
-            const payload={username:username,
+            const payload={id:user._id,
+                username:username,
                 email:user.email}
             const token  = jwt.sign(payload,process.env.JWT_SECRET)
 

@@ -1,8 +1,8 @@
-import Order from "../models/Order";
-import User from "../models/User";
-import { getRandomCirculation } from "../utils/randomCirculation";
-import { startCronForOrder , stopCronForOrder } from "../utils/cron";
-import { updatePortfolio } from "./PortfolioController";
+import Order from "../models/Order.js";
+import User from "../models/User.js";
+import { getRandomCirculation } from "../utils/randomCirculation.js";
+import { startCronForOrder , stopCronForOrder } from "../utils/cron.js";
+import { updatePortfolio } from "./PortfolioController.js";
 
 const placeOrder = async (req, res) => {
     try {
