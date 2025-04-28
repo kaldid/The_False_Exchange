@@ -11,7 +11,7 @@ const registerUser = async (req,res)=>{
             return res.json({success:false,message:"Missing Details"})
 
         }
-        const existingUser = User.find({username:username});
+        const existingUser = await User.findOne({username:username});
         if (existingUser) {
             return res.status(400).json({ message: 'User already exists' });
 
@@ -46,42 +46,43 @@ const registerUser = async (req,res)=>{
     }
 }
 
-const loginUser  = async(req,res)=>{
+const loginUser = async (req, res) => {
     try {
-        const{username,password} = req.body;
-
-        const user = await User.findOne({username});
-        if(!user){
-            res.json({success:false,message:"User does not exist"})
-        }
-
-        const isMatch = await bcrypt.compare(password,user.password)
-        
-        if(isMatch){
-            const payload={id:user._id,
-                username:username,
-                email:user.email}
-            const token  = jwt.sign(payload,process.env.JWT_SECRET)
-
-            res.cookie('token', token, {
-                httpOnly: true,
-                secure: false, // true if HTTPS (for local dev, keep false)
-                sameSite: 'Strict',
-                maxAge: 60 * 60 * 1000, // 1 hour
-              });
-        }
-        else{
-            res.json({success:false,message:"Invalid Credientials"})
-
-
-        } 
-        res.json({ message: 'Login successful' });
-        
+      const { username, password } = req.body;
+  
+      const user = await User.findOne({ username });
+      if (!user) {
+        return res.json({ success: false, message: "User does not exist" });
+      }
+  
+      const isMatch = await bcrypt.compare(password, user.password);
+  
+      if (!isMatch) {
+        return res.json({ success: false, message: "Invalid Credentials" });
+      }
+  
+      const payload = {
+        id: user._id,
+        username: username,
+        email: user.email,
+      };
+  
+      const token = jwt.sign(payload, process.env.JWT_SECRET);
+  
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: false, // true if HTTPS (set later)
+        sameSite: 'Strict',
+        maxAge: 60 * 60 * 1000, // 1 hour
+      });
+  
+      return res.json({ success: true, message: 'Login successful' });
+  
     } catch (error) {
-        console.log(error)
-        res.json({success:false,message:error.message})
-        
+      console.log(error);
+      res.json({ success: false, message: error.message });
     }
-}
+  };
+  
 
 export{loginUser,registerUser}
