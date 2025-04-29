@@ -43,9 +43,9 @@ app.post('/guarded',authMiddleware,async(req,res)=>{
 })
 
 app.use(authMiddleware)
-app.post('/placeOrder', placeOrder)
-app.post('/amendOrder', amendOrder)
-app.post('/cancelOrder' , cancelOrder)
+app.post('/placeOrder', authMiddleware,placeOrder)
+app.post('/amendOrder', authMiddleware,amendOrder)
+app.post('/cancelOrder',authMiddleware , cancelOrder)
 
 app.get('/getportfolio',authMiddleware,getPortfolioByUserId)
 app.get('/getorders',authMiddleware,getActiveOrders)

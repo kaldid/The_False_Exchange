@@ -20,7 +20,7 @@ async function handleOrderUpdate(orderId) {
         }
 
         const remainingQuantity = order.quantity - order.executedQuantity;
-
+            console.log('remainig quamt: ', remainingQuantity)
         if (remainingQuantity <= 0) {
             order.status = 'EXECUTED';
             order.updatedAt = Date.now();
@@ -31,7 +31,7 @@ async function handleOrderUpdate(orderId) {
         }
 
         const circulationQuantity = getRandomCirculation(remainingQuantity);
-
+        console.log('From handle order :',circulationQuantity )
         if (circulationQuantity >= remainingQuantity) {
             order.executedQuantity = order.quantity;
             order.status = 'EXECUTED';
@@ -63,8 +63,8 @@ function startCronForOrder(orderId) {
 
     const timerId = setInterval(async () => {
         await handleOrderUpdate(orderId);
-    }, Math.floor(Math.random() * 5000) + 5000); 
-
+    },30000); 
+    
     activeOrderTimers.set(orderId, timerId);
     console.log(`Started cycle for Order ${orderId}`);
 }

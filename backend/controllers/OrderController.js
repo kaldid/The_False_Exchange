@@ -6,10 +6,16 @@ import { updatePortfolio } from "./PortfolioController.js";
 import jwt from 'jsonwebtoken'
 const placeOrder = async (req, res) => {
     try {
-        const {userId, security, quantity, price, orderType } = req.body;
-
-        const circulationQuantity = getRandomCirculation(quantity);
-
+        const {security, quantity, price, orderType } = req.body;
+        const token=req.cookies.token;
+        if (!token) {
+            return res.status(401).json({ success: false, message: 'Unauthorized: No token' });
+        }
+        const decode=jwt.verify(token,process.env.JWT_SECRET);
+        // console.log(decode.id)
+        const userId=decode.id;
+        const circulationQuantity = getRandomCirculation(Number(quantity));
+        console.log(circulationQuantity)
         let status;
         let executedQuantity;
 
