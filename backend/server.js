@@ -7,7 +7,7 @@ import authMiddleware from './auth.js'
 import cookieParser from 'cookie-parser'
 import 'dotenv/config'
 import {loginUser,registerUser} from './controllers/UserControllers.js'
-import { amendOrder, cancelOrder, placeOrder } from './controllers/OrderController.js'
+import { amendOrder, cancelOrder, getActiveOrders, placeOrder } from './controllers/OrderController.js'
 import { getPortfolioByUserId } from './controllers/PortfolioController.js'
 const PORT = process.env.PORT || 8000
 
@@ -48,7 +48,7 @@ app.post('/amendOrder', amendOrder)
 app.post('/cancelOrder' , cancelOrder)
 
 app.get('/getportfolio',authMiddleware,getPortfolioByUserId)
-
+app.get('/getorders',authMiddleware,getActiveOrders)
 
 
 

@@ -7,27 +7,28 @@ function Login({ handleLogin, navigateTo }) {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    try{
-        const response = await fetch("http://localhost:8000/login", {
-            method: "POST",
-            headers: {"Content-Type":"application/json"},
-            body: JSON.stringify({username, password}),
-            credentials: "include",
-        })
-
-        const data = await response.json();
-
-         if(!response.ok){
-            const err = await response.json()
-            throw new Error(err.message || "Login Failed")
-        }
-        handleLogin(data.email || username);
-        navigateTo("explore");
-    } catch(error){
-        setError(error.message);
+    try {
+      const response = await fetch("http://localhost:8000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+        credentials: "include",
+      });
+  
+      const data = await response.json(); // Only call once!
+  
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "Login Failed");
+      }
+  
+      handleLogin(data.email || username);
+      navigateTo("explore");
+  
+    } catch (error) {
+      setError(error.message);
     }
-    //handleLogin(email);
   };
+  
 
   return (
     <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">

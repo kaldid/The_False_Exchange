@@ -26,11 +26,27 @@ function App() {
     };
 
     // Logout handler
-    const handleLogout = () => {
-        setIsLoggedIn(false);
-        setUserEmail('');
-        setCurrentPage('home');
+    const handleLogout = async (request,response) => {
+        try {
+            const response = await fetch('http://localhost:8000/logout', {
+                method: 'POST',
+                credentials: 'include', // important to send cookies
+            });
+    
+            const data = await response.json();
+    
+            if (response.ok) {
+                setIsLoggedIn(false);
+                setUserEmail('');
+                setCurrentPage('home');
+            } else {
+                console.error('Logout failed:', data.message);
+            }
+        } catch (error) {
+            console.error('Error during logout:', error.message);
+        }
     };
+    
 
     const handleRegister = async (form) => { 
         try {

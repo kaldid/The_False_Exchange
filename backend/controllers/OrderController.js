@@ -3,7 +3,7 @@ import User from "../models/User.js";
 import { getRandomCirculation } from "../utils/randomCirculation.js";
 import { startCronForOrder , stopCronForOrder } from "../utils/cron.js";
 import { updatePortfolio } from "./PortfolioController.js";
-
+import jwt from 'jsonwebtoken'
 const placeOrder = async (req, res) => {
     try {
         const { userId, security, quantity, price, orderType } = req.body;
@@ -122,4 +122,29 @@ const cancelOrder = async (req, res) => {
     }
 };
 
-export {placeOrder , amendOrder , cancelOrder}
+
+const getActiveOrders = async (req, res) => {
+    try {
+      const token = req.cookies.token;
+  
+      if (!token) {
+        return res.status(401).json({ success: false, message: 'Unauthorized: No token' });
+      }
+  
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const userId = decoded.id;
+  
+      const activeOrders = await Order.find({ 
+        userId, 
+        status: { $in: ['PENDING', 'PARTIALLY_EXECUTED'] } 
+      }).sort({ createdAt: -1 }); // latest first
+  
+      res.json({ success: true, orders: activeOrders });
+  
+    } catch (error) {
+      console.error('Error fetching active orders:', error);
+      res.status(500).json({ success: false, message: error.message });
+    }
+  };
+
+export {placeOrder , amendOrder , cancelOrder,getActiveOrders}
