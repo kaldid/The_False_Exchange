@@ -1,44 +1,39 @@
 import React, { useState } from 'react';
+import { BrowserRouter, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import Header from './components/header.jsx';
 import Footer from './components/footer.jsx';
 import Home from './pages/home.jsx';
 import Login from './pages/login.jsx';
 import Portfolio from './pages/portfolio.jsx';
 import Order from './pages/order.jsx';
-import Explore from './pages/explore.jsx'
-import Register from './pages/register.jsx'
+import Explore from './pages/explore.jsx';
+import Register from './pages/register.jsx';
 
-function App() {
-    const [currentPage, setCurrentPage] = useState('home');
+// Wrapper to pass navigate and login state to Header
+function AppWrapper() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userEmail, setUserEmail] = useState('');
-
-    // Navigation function
-    const navigateTo = (page) => {
-        setCurrentPage(page);
-    };
+    const navigate = useNavigate();
 
     // Login handler
     const handleLogin = (email) => {
         setIsLoggedIn(true);
         setUserEmail(email);
-        setCurrentPage('explore');
+        navigate('/explore');
     };
 
     // Logout handler
-    const handleLogout = async (request,response) => {
+    const handleLogout = async () => {
         try {
             const response = await fetch('http://localhost:8000/logout', {
                 method: 'POST',
-                credentials: 'include', // important to send cookies
+                credentials: 'include',
             });
-    
             const data = await response.json();
-    
             if (response.ok) {
                 setIsLoggedIn(false);
                 setUserEmail('');
-                setCurrentPage('home');
+                navigate('/', {replace: true});
             } else {
                 console.error('Logout failed:', data.message);
             }
@@ -46,23 +41,22 @@ function App() {
             console.error('Error during logout:', error.message);
         }
     };
-    
 
-    const handleRegister = async (form) => { 
+    const handleRegister = async (form) => {
         try {
-            const response = await fetch("http://localhost:8000/register", { // Change URL to your backend
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-            username: form.username,
-            email: form.email,
-            password: form.password
-            }),
+            const response = await fetch("http://localhost:8000/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    username: form.username,
+                    email: form.email,
+                    password: form.password
+                }),
             });
             const data = await response.json();
             if (data.success) {
                 alert("Registration successful! Please log in.");
-                navigateTo("login");
+                navigate("/login");
             } else {
                 alert(data.message || "Registration failed.");
             }
@@ -71,30 +65,37 @@ function App() {
         }
     };
 
-
     return (
         <div className="flex flex-col min-h-screen bg-gray-50">
-        {/* Header */}
-        <Header 
-            isLoggedIn={isLoggedIn} 
-            navigateTo={navigateTo} 
-            handleLogout={handleLogout}
-        />
+            <Header
+                isLoggedIn={isLoggedIn}
+                navigateTo={navigate}
+                handleLogout={handleLogout}
+            />
 
-        {/* Main Content Area */}
-        <main className="flex-grow container mx-auto p-4">
-            {currentPage === 'home' && <Home navigateTo={navigateTo} />}
-            {currentPage === 'login' && <Login handleLogin={handleLogin} navigateTo={navigateTo} />}
-            {currentPage === 'explore' && isLoggedIn && <Explore />}
-            {currentPage === 'portfolio' && isLoggedIn && <Portfolio navigateTo={navigateTo} />}
-            {currentPage === 'order' && isLoggedIn && <Order />}
-            {currentPage === 'register' && <Register onRegister={handleRegister} navigateTo={navigateTo} />}
-        </main>
+            <main className="flex-grow container mx-auto p-4">
+                <Routes>
+                    <Route path="/" element={<Home navigateTo={navigate} />} />
+                    <Route path="/login" element={<Login handleLogin={handleLogin} navigateTo={navigate} />} />
+                    <Route path="/explore" element={isLoggedIn ? <Explore /> : <Navigate to="/home" replace />} />
+                    <Route path="/portfolio" element={isLoggedIn ? <Portfolio navigateTo={navigate} /> : <Navigate to="/home" replace />} />
+                    <Route path="/order" element={isLoggedIn ? <Order /> : <Navigate to="/home" replace />} />
+                    <Route path="/register" element={<Register onRegister={handleRegister} navigateTo={navigate} />} />
+                    {/* Optional: catch-all route */}
+                    <Route path="*" element={<Navigate to="/" />} />
+                </Routes>
+            </main>
 
-        {/* Footer */}
-        <Footer />
+            <Footer />
         </div>
     );
 }
 
-export default App;
+export default function App() {
+    return (
+        <BrowserRouter>
+            <AppWrapper />
+        </BrowserRouter>
+    );
+}
+
