@@ -1,5 +1,9 @@
 export function getRandomCirculation(quantity) {
-    const variation = Math.floor(Math.random() * (quantity * 0.5)); // 0-50% variation
-    const plusOrMinus = Math.random() < 0.5 ? -1 : 1;
+    const maxVariation = quantity * 0.5;
+    const variation = Math.floor(Math.random() * maxVariation);
+
+    const dynamicBias = 0.3 + Math.random() * 0.4; // bias is in [0.3, 0.7]
+    const plusOrMinus = Math.random() < dynamicBias ? -1 : 1;
+
     return quantity + (plusOrMinus * variation);
 }
