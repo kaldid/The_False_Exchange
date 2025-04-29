@@ -13,7 +13,7 @@ function AmendCancelOrder({ navigateTo }) {
                 const token = localStorage.getItem('token');
                 const decoded = jwtDecode(token);
                 const userId = decoded.userId || decoded.id;
-                const response = await fetch(`http://localhost:8000/getOrders?userId=${userId}`, {
+                const response = await fetch(`${process.env.BACKEND_URL}/getOrders?userId=${userId}`, {
                     credentials: 'include',
                 });
                 const data = await response.json();
@@ -45,7 +45,7 @@ function AmendCancelOrder({ navigateTo }) {
             return;
         }
         try {
-            const response = await fetch('http://localhost:8000/amendOrder', {
+            const response = await fetch(`${process.env.BACKEND_URL}/amendOrder`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -66,7 +66,7 @@ function AmendCancelOrder({ navigateTo }) {
 
     const handleCancel = async (orderId) => {
         try {
-            const response = await fetch('http://localhost:8000/cancelOrder', {
+            const response = await fetch(`${process.env.BACKEND_URL}/cancelOrder`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',

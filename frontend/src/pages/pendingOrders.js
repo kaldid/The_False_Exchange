@@ -6,7 +6,7 @@ function PendingOrders() {
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch('http://localhost:8000/getorders', {
+      const res = await fetch(`${process.env.BACKEND_URL}/getorders`, {
         credentials: 'include'
       });
       const data = await res.json();

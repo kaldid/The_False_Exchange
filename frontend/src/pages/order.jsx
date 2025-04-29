@@ -16,7 +16,7 @@ function Order() {
     };
 
     try {
-      const response = await fetch('http://localhost:8000/placeOrder', {
+      const response = await fetch(`${process.env.BACKEND_URL}/placeOrder`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

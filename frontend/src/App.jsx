@@ -29,7 +29,7 @@ function AppWrapper() {
     // Logout handler
     const handleLogout = async () => {
         try {
-            const response = await fetch('http://localhost:8000/logout', {
+            const response = await fetch(`${process.env.BACKEND_URL}/logout`, {
                 method: 'POST',
                 credentials: 'include',
             });
@@ -48,7 +48,7 @@ function AppWrapper() {
 
     const handleRegister = async (form) => {
         try {
-            const response = await fetch("http://localhost:8000/register", {
+            const response = await fetch(`${process.env.BACKEND_URL}/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

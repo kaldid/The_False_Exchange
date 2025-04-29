@@ -8,7 +8,7 @@ function Portfolio({ navigateTo }) {
     useEffect(() => {
         const fetchPortfolio = async () => {
             try {
-                const response = await fetch("http://localhost:8000/getportfolio", {
+                const response = await fetch(`${process.env.BACKEND_URL}/getportfolio`, {
                     credentials: "include", // Send cookies for authentication
                 });
                 console.log(response);
