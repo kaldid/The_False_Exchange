@@ -9,6 +9,7 @@ import 'dotenv/config'
 import {loginUser,registerUser} from './controllers/UserControllers.js'
 import { amendOrder, cancelOrder, getActiveOrders, placeOrder } from './controllers/OrderController.js'
 import { getPortfolioByUserId } from './controllers/PortfolioController.js'
+import jwt from "jsonwebtoken"
 const PORT = process.env.PORT || 8000
 
 const app=express();
@@ -42,7 +43,7 @@ app.post('/guarded',authMiddleware,async(req,res)=>{
 
 })
 
-app.use(authMiddleware)
+// app.use(authMiddleware)
 app.post('/placeOrder', authMiddleware,placeOrder)
 app.post('/amendOrder', authMiddleware,amendOrder)
 app.post('/cancelOrder',authMiddleware , cancelOrder)
@@ -50,9 +51,22 @@ app.post('/cancelOrder',authMiddleware , cancelOrder)
 app.get('/getportfolio',authMiddleware,getPortfolioByUserId)
 app.get('/getorders',authMiddleware,getActiveOrders)
 
+app.post('/amendOrder', amendOrder);
+app.post('/cancelOrder', cancelOrder);
 
+app.get("/verifyToken", (req, res) => {
+    const token = req.cookies.token;
+    // console.log("cookies: ",req.cookies)
+    
+    if (!token) return res.status(401).json({ success: false, message: "No token" });
 
-
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        res.json({ success: true, username: decoded.username });
+    } catch (err) {
+        res.status(401).json({ success: false, message: "Invalid token" });
+    }
+});
 
 
 

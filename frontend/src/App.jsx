@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import Header from './components/header.jsx';
 import Footer from './components/footer.jsx';
@@ -8,25 +8,55 @@ import Portfolio from './pages/portfolio.jsx';
 import Order from './pages/order.jsx';
 import Explore from './pages/explore.jsx';
 import Register from './pages/register.jsx';
-import AmendCancelOrder from './pages/amendCancelOrder.jsx'
+import AmendCancelOrder from './pages/amendCancelOrder.jsx';
+import PendingOrders from './pages/pendingOrders.jsx';
 
-import PendingOrders from './pages/pendingOrders';
+// ProtectedRoute component
+function ProtectedRoute({ isLoggedIn, loading, children }) {
+    if (loading) {
+        return <div className="text-center mt-10 text-gray-600">Loading...</div>;
+    }
+    return isLoggedIn ? children : <Navigate to="/" replace />;
+}
 
-
-// Wrapper to pass navigate and login state to Header
 function AppWrapper() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userEmail, setUserEmail] = useState('');
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+    console.log("AppWrapper mounted");
 
-    // Login handler
+    useEffect(() => {
+        const checkAuth = async () => {
+            try {
+                const response = await fetch("http://localhost:8000/verifyToken", {
+                    method: "GET",
+                    credentials: "include",
+                });
+                const data = await response.json();
+                // console.log(response.ok);
+                if (response.ok && data.success) {
+                    setIsLoggedIn(true);
+                    setUserEmail(data.email || "");
+                } else {
+                    setIsLoggedIn(false);
+                }
+            } catch (error) {
+                console.error("Error verifying login:", error);
+                setIsLoggedIn(false);
+            } finally {
+                setLoading(false);
+            }
+        };
+        checkAuth();
+    }, []);
+
     const handleLogin = (email) => {
         setIsLoggedIn(true);
         setUserEmail(email);
         navigate('/explore');
     };
 
-    // Logout handler
     const handleLogout = async () => {
         try {
             const response = await fetch('http://localhost:8000/logout', {
@@ -37,7 +67,7 @@ function AppWrapper() {
             if (response.ok) {
                 setIsLoggedIn(false);
                 setUserEmail('');
-                navigate('/', {replace: true});
+                navigate('/', { replace: true });
             } else {
                 console.error('Logout failed:', data.message);
             }
@@ -71,24 +101,50 @@ function AppWrapper() {
 
     return (
         <div className="flex flex-col min-h-screen bg-gray-50">
+            {!loading && (
             <Header
                 isLoggedIn={isLoggedIn}
                 navigateTo={navigate}
                 handleLogout={handleLogout}
             />
+        )}
 
             <main className="flex-grow container mx-auto p-4">
                 <Routes>
                     <Route path="/" element={<Home navigateTo={navigate} />} />
                     <Route path="/login" element={<Login handleLogin={handleLogin} navigateTo={navigate} />} />
-                    <Route path="/explore" element={isLoggedIn ? <Explore /> : <Navigate to="/home" replace />} />
-                    <Route path="/portfolio" element={isLoggedIn ? <Portfolio navigateTo={navigate} /> : <Navigate to="/home" replace />} />
-                    <Route path="/order" element={isLoggedIn ? <Order /> : <Navigate to="/home" replace />} />
                     <Route path="/register" element={<Register onRegister={handleRegister} navigateTo={navigate} />} />
-                    <Route path="/amendOrder" element={isLoggedIn ? <AmendCancelOrder navigateTo={navigate} /> : <Navigate to="/home" replace />} />
-                    <Route path="/" element={<Order />} />
-                    <Route path="/pending-orders" element={<PendingOrders />} />
-                    {/* Optional: catch-all route */}
+
+                    <Route path="/explore" element={
+                        <ProtectedRoute isLoggedIn={isLoggedIn} loading={loading}>
+                            <Explore />
+                        </ProtectedRoute>
+                    } />
+
+                    <Route path="/portfolio" element={
+                        <ProtectedRoute isLoggedIn={isLoggedIn} loading={loading}>
+                            <Portfolio navigateTo={navigate} />
+                        </ProtectedRoute>
+                    } />
+
+                    <Route path="/order" element={
+                        <ProtectedRoute isLoggedIn={isLoggedIn} loading={loading}>
+                            <Order />
+                        </ProtectedRoute>
+                    } />
+
+                    <Route path="/amendOrder" element={
+                        <ProtectedRoute isLoggedIn={isLoggedIn} loading={loading}>
+                            <AmendCancelOrder navigateTo={navigate} />
+                        </ProtectedRoute>
+                    } />
+
+                    <Route path="/pending-orders" element={
+                        <ProtectedRoute isLoggedIn={isLoggedIn} loading={loading}>
+                            <PendingOrders />
+                        </ProtectedRoute>
+                    } />
+
                     <Route path="*" element={<Navigate to="/" />} />
                 </Routes>
             </main>
@@ -105,4 +161,3 @@ export default function App() {
         </BrowserRouter>
     );
 }
-
