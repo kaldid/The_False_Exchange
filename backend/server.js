@@ -28,8 +28,8 @@ app.post('/login',loginUser)
 app.post('/logout', (req, res) => {
     res.clearCookie('token', {
         httpOnly: true,
-        sameSite: 'Strict',
-        secure: false, // true if you're using HTTPS
+        sameSite: 'None',
+        secure: true, // true if you're using HTTPS
     });
     res.json({ success: true, message: 'Logged out successfully' });
 });
