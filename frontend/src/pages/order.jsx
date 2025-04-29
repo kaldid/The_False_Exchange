@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+const backendURL = process.env.REACT_APP_BACKEND_URL
+
 function Order() {
   const [security, setSecurity] = useState('');
   const [shares, setShares] = useState('');
@@ -16,7 +18,7 @@ function Order() {
     };
 
     try {
-      const response = await fetch('http://localhost:8000/placeOrder', {
+      const response = await fetch(`${backendURL}/placeOrder`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

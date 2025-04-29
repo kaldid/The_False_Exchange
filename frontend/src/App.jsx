@@ -19,6 +19,11 @@ function ProtectedRoute({ isLoggedIn, loading, children }) {
     return isLoggedIn ? children : <Navigate to="/" replace />;
 }
 
+
+
+const backendURL = process.env.REACT_APP_BACKEND_URL
+
+// Wrapper to pass navigate and login state to Header
 function AppWrapper() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userEmail, setUserEmail] = useState('');
@@ -59,7 +64,7 @@ function AppWrapper() {
 
     const handleLogout = async () => {
         try {
-            const response = await fetch('http://localhost:8000/logout', {
+            const response = await fetch(`${backendURL}/logout`, {
                 method: 'POST',
                 credentials: 'include',
             });
@@ -78,7 +83,7 @@ function AppWrapper() {
 
     const handleRegister = async (form) => {
         try {
-            const response = await fetch("http://localhost:8000/register", {
+            const response = await fetch(`${backendURL}/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

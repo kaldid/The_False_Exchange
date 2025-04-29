@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 
+const backend_URL = process.env.REACT_APP_BACKEND_URL;
+
 function AmendCancelOrder({ navigateTo }) {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -13,7 +15,7 @@ function AmendCancelOrder({ navigateTo }) {
                 const token = localStorage.getItem('token');
                 const decoded = jwtDecode(token);
                 const userId = decoded.userId || decoded.id;
-                const response = await fetch(`http://localhost:8000/getOrders?userId=${userId}`, {
+                const response = await fetch(`${backend_URL}/getOrders?userId=${userId}`, {
                     credentials: 'include',
                 });
                 const data = await response.json();
@@ -45,7 +47,7 @@ function AmendCancelOrder({ navigateTo }) {
             return;
         }
         try {
-            const response = await fetch('http://localhost:8000/amendOrder', {
+            const response = await fetch(`${backend_URL}/amendOrder`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -66,7 +68,7 @@ function AmendCancelOrder({ navigateTo }) {
 
     const handleCancel = async (orderId) => {
         try {
-            const response = await fetch('http://localhost:8000/cancelOrder', {
+            const response = await fetch(`${backend_URL}/cancelOrder`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
