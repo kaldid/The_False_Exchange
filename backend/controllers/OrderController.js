@@ -6,7 +6,7 @@ import { updatePortfolio } from "./PortfolioController.js";
 import jwt from 'jsonwebtoken'
 const placeOrder = async (req, res) => {
     try {
-        const { userId, security, quantity, price, orderType } = req.body;
+        const {userId, security, quantity, price, orderType } = req.body;
 
         const circulationQuantity = getRandomCirculation(quantity);
 
@@ -40,7 +40,7 @@ const placeOrder = async (req, res) => {
         });
 
         if (status === 'EXECUTED') {
-            await updatePortfolio(userId, security, quantity, price);  
+            await updatePortfolio(userId, security, quantity, price, orderType);  
         }
 
         return res.status(200).json({
