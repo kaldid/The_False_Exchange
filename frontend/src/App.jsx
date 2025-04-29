@@ -10,6 +10,9 @@ import Explore from './pages/explore.jsx';
 import Register from './pages/register.jsx';
 import AmendCancelOrder from './pages/amendCancelOrder.jsx'
 
+import PendingOrders from './pages/pendingOrders';
+
+
 // Wrapper to pass navigate and login state to Header
 function AppWrapper() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -83,6 +86,8 @@ function AppWrapper() {
                     <Route path="/order" element={isLoggedIn ? <Order /> : <Navigate to="/home" replace />} />
                     <Route path="/register" element={<Register onRegister={handleRegister} navigateTo={navigate} />} />
                     <Route path="/amendOrder" element={isLoggedIn ? <AmendCancelOrder navigateTo={navigate} /> : <Navigate to="/home" replace />} />
+                    <Route path="/" element={<Order />} />
+                    <Route path="/pending-orders" element={<PendingOrders />} />
                     {/* Optional: catch-all route */}
                     <Route path="*" element={<Navigate to="/" />} />
                 </Routes>
