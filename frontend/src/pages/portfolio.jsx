@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
+const backendURL = process.env.REACT_APP_BACKEND_URL
+
 function Portfolio({ navigateTo }) {
     const [holdings, setHoldings] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -8,7 +10,7 @@ function Portfolio({ navigateTo }) {
     useEffect(() => {
         const fetchPortfolio = async () => {
             try {
-                const response = await fetch(`${process.env.BACKEND_URL}/getportfolio`, {
+                const response = await fetch(`${backendURL}/getportfolio`, {
                     credentials: "include", // Send cookies for authentication
                 });
                 console.log(response);

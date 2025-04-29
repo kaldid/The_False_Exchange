@@ -9,9 +9,9 @@ import Order from './pages/order.jsx';
 import Explore from './pages/explore.jsx';
 import Register from './pages/register.jsx';
 import AmendCancelOrder from './pages/amendCancelOrder.jsx'
-
 import PendingOrders from './pages/pendingOrders';
 
+const backendURL = process.env.REACT_APP_BACKEND_URL
 
 // Wrapper to pass navigate and login state to Header
 function AppWrapper() {
@@ -29,7 +29,7 @@ function AppWrapper() {
     // Logout handler
     const handleLogout = async () => {
         try {
-            const response = await fetch(`${process.env.BACKEND_URL}/logout`, {
+            const response = await fetch(`${backendURL}/logout`, {
                 method: 'POST',
                 credentials: 'include',
             });
@@ -48,7 +48,7 @@ function AppWrapper() {
 
     const handleRegister = async (form) => {
         try {
-            const response = await fetch(`${process.env.BACKEND_URL}/register`, {
+            const response = await fetch(`${backendURL}/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

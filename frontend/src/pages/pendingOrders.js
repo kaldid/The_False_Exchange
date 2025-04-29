@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 
+const backendURL = process.env.REACT_APP_BACKEND_URL
 function PendingOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch(`${process.env.BACKEND_URL}/getorders`, {
+      const res = await fetch(`${backendURL}/getorders`, {
         credentials: 'include'
       });
       const data = await res.json();

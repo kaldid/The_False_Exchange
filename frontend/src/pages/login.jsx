@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 
+const backend_URL = process.env.REACT_APP_BACKEND_URL;
+console.log(backend_URL)
 function Login({ handleLogin, navigateTo }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -8,7 +10,7 @@ function Login({ handleLogin, navigateTo }) {
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`${process.env.BACKEND_URL}/login`, {
+      const response = await fetch(`${backend_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
