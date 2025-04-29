@@ -8,6 +8,7 @@ import Portfolio from './pages/portfolio.jsx';
 import Order from './pages/order.jsx';
 import Explore from './pages/explore.jsx';
 import Register from './pages/register.jsx';
+import AmendCancelOrder from './pages/amendCancelOrder.jsx'
 
 // Wrapper to pass navigate and login state to Header
 function AppWrapper() {
@@ -81,6 +82,7 @@ function AppWrapper() {
                     <Route path="/portfolio" element={isLoggedIn ? <Portfolio navigateTo={navigate} /> : <Navigate to="/home" replace />} />
                     <Route path="/order" element={isLoggedIn ? <Order /> : <Navigate to="/home" replace />} />
                     <Route path="/register" element={<Register onRegister={handleRegister} navigateTo={navigate} />} />
+                    <Route path="/amendOrder" element={isLoggedIn ? <AmendCancelOrder navigateTo={navigate} /> : <Navigate to="/home" replace />} />
                     {/* Optional: catch-all route */}
                     <Route path="*" element={<Navigate to="/" />} />
                 </Routes>
