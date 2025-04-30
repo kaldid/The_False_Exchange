@@ -13,7 +13,7 @@ function Portfolio({ navigateTo }) {
                 const response = await fetch(`${backendURL}/getportfolio`, {
                     credentials: "include", // Send cookies for authentication
                 });
-                console.log(response);
+                // console.log(response);
                 if (!response.ok) throw new Error("Failed to fetch portfolio");
                 const data = await response.json();
                 setHoldings(data.portfolio.holdings);
