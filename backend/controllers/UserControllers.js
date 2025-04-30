@@ -70,6 +70,7 @@ const loginUser = async (req, res) => {
       const token = jwt.sign(payload, process.env.JWT_SECRET);
   
       res.cookie('token', token, {
+        path: '/',
         httpOnly: true,
         secure: true, // true if HTTPS (set later)
         sameSite: 'None',
