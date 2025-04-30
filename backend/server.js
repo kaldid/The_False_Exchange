@@ -18,7 +18,7 @@ const app=express();
 app.use(cookieParser()); 
 app.use(express.json())
 app.use(cors({
-    origin: 'https://stockexfro.onrender.com', // your frontend URL
+    origin: '/', // your frontend URL
     credentials: true, // Allow cookies
 }))
 app.use(express.urlencoded({ extended: true }));
