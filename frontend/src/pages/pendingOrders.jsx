@@ -12,7 +12,7 @@ export default function PendingOrders() {
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch('http://localhost:8000/getorders', {
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/getorders`, {
         credentials: 'include',
       });
       const data = await res.json();
@@ -30,7 +30,7 @@ export default function PendingOrders() {
 
   const handleAmend = async (orderId) => {
     try {
-      const res = await fetch('http://localhost:8000/amendOrder', {
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/amendOrder`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -56,7 +56,7 @@ export default function PendingOrders() {
 
   const handleCancel = async (orderId,executedQuantity,security,price,orderType,quantity) => {
     try {
-      const res = await fetch('http://localhost:8000/cancelOrder', {
+      const res = await fetch( `${process.env.REACT_APP_BACKEND_URL}/cancelOrder`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -81,7 +81,10 @@ export default function PendingOrders() {
     <div className="max-w-4xl mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-6 text-center">Pending Orders</h2>
       {orders.length === 0 ? (
-        <p className="text-center text-gray-600">No pending or partially executed orders.</p>
+        <div className="text-center text-gray-600 py-6">
+        <p>No pending or partially executed orders.</p>
+        <p>All orders have been executed.</p>
+      </div>
       ) : (
         <ul className="space-y-4">
           {orders.map((order) => (

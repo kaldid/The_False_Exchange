@@ -18,7 +18,7 @@ const app=express();
 app.use(cookieParser()); 
 app.use(express.json())
 app.use(cors({
-    origin: 'http://localhost:3000', // your frontend URL
+    origin: '*', // your frontend URL
     credentials: true, // Allow cookies
 }))
 app.use(express.urlencoded({ extended: true }));
@@ -29,7 +29,7 @@ app.post('/login',loginUser)
 app.post('/logout', (req, res) => {
     res.clearCookie('token', {
         httpOnly: true,
-        sameSite: 'None',
+        sameSite: 'https://stockexfro.onrender.com',
         secure: true, // true if you're using HTTPS
     });
     res.json({ success: true, message: 'Logged out successfully' });

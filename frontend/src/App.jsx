@@ -34,7 +34,7 @@ function AppWrapper() {
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                const response = await fetch("http://localhost:8000/verifyToken", {
+                const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/verifyToken`, {
                     method: "GET",
                     credentials: "include",
                 });

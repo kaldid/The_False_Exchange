@@ -72,7 +72,7 @@ const loginUser = async (req, res) => {
       res.cookie('token', token, {
         httpOnly: true,
         secure: true, // true if HTTPS (set later)
-        sameSite: 'Strict',
+        sameSite: 'None',
         maxAge: 60 * 60 * 1000, // 1 hour
       });
   

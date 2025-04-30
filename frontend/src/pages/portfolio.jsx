@@ -34,8 +34,22 @@ function Portfolio({ navigateTo }) {
     );
 
     if (loading) return <div>Loading...</div>;
-    if (error) return <div className="text-red-500">{error}</div>;
-
+    // if (error) return <div className="text-red-500">{error}</div>;
+    // if (error) return <div className="text-red-500">{error}</div>;
+    if (holdings.length === 0) {
+        return (
+            <div className="max-w-4xl mx-auto text-center mt-10">
+                <h2 className="text-xl font-semibold">Your portfolio is empty.</h2>
+                <p className="text-gray-600 mt-2">You haven't added any stocks yet.</p>
+                <button
+                    onClick={() => navigateTo('order')}
+                    className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+                >
+                    Place Your First Order
+                </button>
+            </div>
+        );
+    }
     return (
         <div className="max-w-4xl mx-auto">
             <div className="flex justify-between items-center mb-6">

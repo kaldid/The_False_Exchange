@@ -25,7 +25,7 @@ function Order() {
     const orderData = {
       security: security.toUpperCase(),
       quantity: Number(shares),
-      price: 100,
+      price: stockPrices[security],
       orderType: 'BUY'
     };
 
@@ -40,7 +40,7 @@ function Order() {
       const data = await response.json();
       if (!response.ok) return alert(data.message || 'Order failed');
 
-      alert('Order placed successfully!');
+      alert('Order placed successfully!. Please Check Order Status.');
       setSecurity('');
       setShares('');
     } catch (error) {
@@ -145,7 +145,7 @@ function Order() {
           onClick={() => navigate('/pending-orders')}
           className="w-full py-2 px-4 rounded-md text-white bg-blue-500 hover:bg-blue-600 font-semibold"
         >
-          View Pending Orders
+          Check Order Status
         </button>
       </div>
 
