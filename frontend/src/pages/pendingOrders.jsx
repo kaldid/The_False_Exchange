@@ -54,13 +54,13 @@ export default function PendingOrders() {
     }
   };
 
-  const handleCancel = async (orderId) => {
+  const handleCancel = async (orderId,executedQuantity,security,price,orderType,quantity) => {
     try {
       const res = await fetch('http://localhost:8000/cancelOrder', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderId }),
+        body: JSON.stringify({ orderId,executedQuantity,security,price,orderType,quantity}),
       });
 
       const data = await res.json();
@@ -108,7 +108,7 @@ export default function PendingOrders() {
                   </button>
                   <button
                     className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600"
-                    onClick={() => handleCancel(order._id)}
+                    onClick={() => handleCancel(order._id,order.executedQuantity,order.security,order.price,order.orderType,order.quantity)}
                   >
                     Cancel
                   </button>

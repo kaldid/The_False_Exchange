@@ -4,55 +4,71 @@ import { updatePortfolio } from '../controllers/PortfolioController.js';
 
 const activeOrderTimers = new Map(); // OrderId -> timerId
 
-async function handleOrderUpdate(orderId) {
-    try {
-        const order = await Order.findById(orderId);
-        if (!order) {
-            console.log(`Order ${orderId} not found. Stopping cycle`);
-            stopCronForOrder(orderId);
-            return;
+async function handleOrderUpdate(orderId ,flag=false) {
+    if (flag){
+        console.log('only update potfolio')
+        try{
+            const order = await Order.findById(orderId);
+            await updatePortfolio(order.userId, order.security, order.executedQuantity, order.price);
         }
-
-        if (order.status === 'EXECUTED' || order.status === 'CANCELLED') {
-            console.log(`Order ${orderId} already completed. Stopping cycle`);
-            stopCronForOrder(orderId);
-            return;
+        catch (error) {
+            console.error(`error updating portfolio while amending order ${orderId}:`, error);
         }
-
-        const remainingQuantity = order.quantity - order.executedQuantity;
-            console.log('remainig quamt: ', remainingQuantity)
-        if (remainingQuantity <= 0) {
-            order.status = 'EXECUTED';
+    }
+    else{
+        try {
+    
+            console.log("handle order update excuted")
+            const order = await Order.findById(orderId);
+            if (!order) {
+                console.log(`Order ${orderId} not found. Stopping cycle`);
+                stopCronForOrder(orderId);
+                return;
+            }
+    
+            if (order.status === 'EXECUTED' || order.status === 'CANCELLED') {
+                console.log(`Order ${orderId} already completed. Stopping cycle`);
+                stopCronForOrder(orderId);
+                return;
+            }
+    
+            const remainingQuantity = order.quantity - order.executedQuantity;
+                console.log('remainig quamt: ', remainingQuantity)
+            if (remainingQuantity <= 0) {
+                order.status = 'EXECUTED';
+                order.updatedAt = Date.now();
+                await order.save();
+                await updatePortfolio(order.userId, order.security, order.quantity, order.price);
+                stopCronForOrder(orderId);
+                return;
+            }
+    
+            const circulationQuantity = getRandomCirculation(remainingQuantity);
+            console.log('From handle order :',circulationQuantity )
+            if (circulationQuantity >= remainingQuantity) {
+                order.executedQuantity = order.quantity;
+                order.status = 'EXECUTED';
+            } else {
+                order.executedQuantity += circulationQuantity;
+                order.status = 'PARTIALLY_EXECUTED';
+            }
+    
             order.updatedAt = Date.now();
             await order.save();
-            await updatePortfolio(order.userId, order.security, order.quantity, order.price);
-            stopCronForOrder(orderId);
-            return;
+    
+            console.log(`Updated Order ${orderId}: Status=${order.status}, ExecutedQuantity=${order.executedQuantity}`);
+            
+            await updatePortfolio(order.userId, order.security, order.executedQuantity, order.price);
+            if (order.status === 'EXECUTED') {
+                stopCronForOrder(orderId);
+            }
+    
+        } catch (error) {
+            console.error(`[CRON] Error handling order ${orderId}:`, error);
         }
 
-        const circulationQuantity = getRandomCirculation(remainingQuantity);
-        console.log('From handle order :',circulationQuantity )
-        if (circulationQuantity >= remainingQuantity) {
-            order.executedQuantity = order.quantity;
-            order.status = 'EXECUTED';
-        } else {
-            order.executedQuantity += circulationQuantity;
-            order.status = 'PARTIALLY_EXECUTED';
-        }
-
-        order.updatedAt = Date.now();
-        await order.save();
-
-        console.log(`Updated Order ${orderId}: Status=${order.status}, ExecutedQuantity=${order.executedQuantity}`);
-        
-        if (order.status === 'EXECUTED') {
-            await updatePortfolio(order.userId, order.security, order.quantity, order.price);
-            stopCronForOrder(orderId);
-        }
-
-    } catch (error) {
-        console.error(`[CRON] Error handling order ${orderId}:`, error);
     }
+    
 }
 
 function startCronForOrder(orderId) {
@@ -78,4 +94,4 @@ function stopCronForOrder(orderId) {
     }
 }
 
-export { startCronForOrder, stopCronForOrder };
+export { startCronForOrder, stopCronForOrder,handleOrderUpdate };

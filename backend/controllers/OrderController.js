@@ -1,12 +1,14 @@
 import Order from "../models/Order.js";
 import User from "../models/User.js";
 import { getRandomCirculation } from "../utils/randomCirculation.js";
-import { startCronForOrder , stopCronForOrder } from "../utils/cron.js";
+import { startCronForOrder , stopCronForOrder,handleOrderUpdate } from "../utils/cron.js";
 import { updatePortfolio } from "./PortfolioController.js";
 import jwt from 'jsonwebtoken'
 const placeOrder = async (req, res) => {
     try {
         const {security, quantity, price, orderType } = req.body;
+
+        console.log("place Order :" ,req.body)
         const token=req.cookies.token;
         if (!token) {
             return res.status(401).json({ success: false, message: 'Unauthorized: No token' });
@@ -45,9 +47,9 @@ const placeOrder = async (req, res) => {
             $push: { orders: savedOrder._id }
         });
 
-        if (status === 'EXECUTED') {
-            await updatePortfolio(userId, security, quantity, price, orderType);  
-        }
+    
+        await updatePortfolio(userId, security, quantity, price, orderType);  
+        
 
         return res.status(200).json({
             message: "Order placed successfully",
@@ -75,17 +77,17 @@ const amendOrder = async (req, res) => {
         }
 
         const remainingQuantity = order.quantity - order.executedQuantity;
-
+        // await updatePortfolio(userId, security, executedQuantity, price, orderType);
         if (newQuantity < order.executedQuantity) {
             return res.status(400).json({ message: "New quantity cannot be less than already executed quantity" });
         }
-
         order.quantity = newQuantity;
         order.price = newPrice || order.price;
         order.updatedAt = Date.now();
         order.status = 'PENDING';
         await order.save();
-
+        await handleOrderUpdate(orderId,true);
+        
         return res.status(200).json({
             message: "Order amended successfully",
             order
@@ -99,8 +101,16 @@ const amendOrder = async (req, res) => {
 
 const cancelOrder = async (req, res) => {
     try {
-        const { orderId } = req.body;
-
+        const { orderId,security,executedQuantity, quantity, price, orderType} = req.body;
+        console.log(req.body)
+        // const {security, quantity, price, orderType } = req.body;
+        const token=req.cookies.token;
+        if (!token) {
+            return res.status(401).json({ success: false, message: 'Unauthorized: No token' });
+        }
+        const decode=jwt.verify(token,process.env.JWT_SECRET);
+        // console.log(decode.id)
+        const userId=decode.id;
         const order = await Order.findById(orderId);
 
         if (!order) {
@@ -113,10 +123,12 @@ const cancelOrder = async (req, res) => {
 
         order.status = 'CANCELLED';
         order.updatedAt = Date.now();
+        order.quantity=executedQuantity;
+        
         stopCronForOrder(orderId);
 
         await order.save();
-
+        await updatePortfolio(userId, security, executedQuantity, price, orderType);
         return res.status(200).json({
             message: "Order cancelled successfully",
             order
