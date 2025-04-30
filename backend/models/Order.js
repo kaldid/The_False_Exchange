@@ -18,6 +18,10 @@ const OrderSchema = new mongoose.Schema({
         type: Number,
         default: 0,
     },
+    lastCycleQuantity : {
+        type : Number,
+        default : 0
+    },
     price: {
         type: Number,
         required: true,

@@ -9,7 +9,7 @@ async function handleOrderUpdate(orderId ,flag=false) {
         console.log('only update potfolio')
         try{
             const order = await Order.findById(orderId);
-            await updatePortfolio(order.userId, order.security, order.executedQuantity, order.price);
+            await updatePortfolio(order.userId, order.security, order.lastCycleQuantity, order.price);
         }
         catch (error) {
             console.error(`error updating portfolio while amending order ${orderId}:`, error);
@@ -38,7 +38,7 @@ async function handleOrderUpdate(orderId ,flag=false) {
                 order.status = 'EXECUTED';
                 order.updatedAt = Date.now();
                 await order.save();
-                await updatePortfolio(order.userId, order.security, order.quantity, order.price);
+                await updatePortfolio(order.userId, order.security, order.lastCycleQuantity, order.price);
                 stopCronForOrder(orderId);
                 return;
             }
@@ -47,9 +47,11 @@ async function handleOrderUpdate(orderId ,flag=false) {
             console.log('From handle order :',circulationQuantity )
             if (circulationQuantity >= remainingQuantity) {
                 order.executedQuantity = order.quantity;
+                order.lastCycleQuantity = remainingQuantity;
                 order.status = 'EXECUTED';
             } else {
                 order.executedQuantity += circulationQuantity;
+                order.lastCycleQuantity = circulationQuantity;
                 order.status = 'PARTIALLY_EXECUTED';
             }
     
@@ -58,7 +60,7 @@ async function handleOrderUpdate(orderId ,flag=false) {
     
             console.log(`Updated Order ${orderId}: Status=${order.status}, ExecutedQuantity=${order.executedQuantity}`);
             
-            await updatePortfolio(order.userId, order.security, order.executedQuantity, order.price);
+            await updatePortfolio(order.userId, order.security, order.lastCycleQuantity, order.price);
             if (order.status === 'EXECUTED') {
                 stopCronForOrder(orderId);
             }

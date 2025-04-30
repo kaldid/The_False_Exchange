@@ -119,7 +119,7 @@ function Order() {
               onChange={(e) => {
                 const qty = e.target.value;
                 setShares(qty);
-                setEstimatedCost((qty && selectedPrice) ? (qty * selectedPrice).toFixed(2) : 0);
+                setEstimatedCost((qty && selectedPrice) ? (qty * selectedPrice).toFixed(2) : (qty*100));
               }}
               className="w-full px-3 py-2 border border-gray-300 rounded-md"
               placeholder="e.g. 10"

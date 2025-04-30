@@ -1,6 +1,6 @@
 import Order from "../models/Order.js";
 import User from "../models/User.js";
-import { getRandomCirculation } from "../utils/randomCirculation.js";
+import { getInitialRandomCirculation } from "../utils/randomCirculation.js";
 import { startCronForOrder , stopCronForOrder,handleOrderUpdate } from "../utils/cron.js";
 import { updatePortfolio } from "./PortfolioController.js";
 import jwt from 'jsonwebtoken'
@@ -16,17 +16,20 @@ const placeOrder = async (req, res) => {
         const decode=jwt.verify(token,process.env.JWT_SECRET);
         // console.log(decode.id)
         const userId=decode.id;
-        const circulationQuantity = getRandomCirculation(Number(quantity));
+        const circulationQuantity = getInitialRandomCirculation(Number(quantity));
         console.log(circulationQuantity)
         let status;
         let executedQuantity;
+        let lastCycleQuantity;
 
         if (circulationQuantity >= quantity) {
             status = 'EXECUTED';
             executedQuantity = quantity;
+            lastCycleQuantity = executedQuantity;
         } else {
             status = 'PARTIALLY_EXECUTED';
             executedQuantity = circulationQuantity;
+            lastCycleQuantity = executedQuantity;
         }
 
         const newOrder = new Order({
@@ -34,6 +37,7 @@ const placeOrder = async (req, res) => {
             security,
             quantity,
             executedQuantity,
+            lastCycleQuantity,
             price,
             orderType,
             status
@@ -48,7 +52,7 @@ const placeOrder = async (req, res) => {
         });
 
     
-        await updatePortfolio(userId, security, quantity, price, orderType);  
+        await updatePortfolio(userId, security, lastCycleQuantity, price, orderType);  
         
 
         return res.status(200).json({
@@ -85,6 +89,7 @@ const amendOrder = async (req, res) => {
         order.price = newPrice || order.price;
         order.updatedAt = Date.now();
         order.status = 'PENDING';
+        order.lastCycleQuantity = 0;
         await order.save();
         await handleOrderUpdate(orderId,true);
         
@@ -124,11 +129,12 @@ const cancelOrder = async (req, res) => {
         order.status = 'CANCELLED';
         order.updatedAt = Date.now();
         order.quantity=executedQuantity;
+        order.lastCycleQuantity = 0;
         
         stopCronForOrder(orderId);
 
         await order.save();
-        await updatePortfolio(userId, security, executedQuantity, price, orderType);
+        await updatePortfolio(userId, security, order.lastCycleQuantity, price, orderType);
         return res.status(200).json({
             message: "Order cancelled successfully",
             order
