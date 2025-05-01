@@ -25,7 +25,7 @@ function Order() {
     const orderData = {
       security: security.toUpperCase(),
       quantity: Number(shares),
-      price: stockPrices[security],
+      price: stockPrices[security] || 100,
       orderType: 'BUY'
     };
 
